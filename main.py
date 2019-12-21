@@ -12,6 +12,9 @@ from pybricks.tools import print, wait, StopWatch
 from pybricks.robotics import DriveBase
 from time import clock
 
+from train_config import TrainConfig
+from train_util import *
+
 
 # Configuration parameters
 change_rail_threshold = 50
@@ -25,65 +28,6 @@ def move_to_curve():
 
 def move_to_straight():
     motor.run_target(max_speed, 0)
-
-
-def manually_offset_motor(speed):
-    motor.run(speed)
-    while any(brick.buttons()):
-        pass
-    motor.stop()
-    motor.reset_angle(0)
-
-
-def manually_offset_sensor(amount):
-    sensor_threshold = sensor_threshold + amount
-    if sensor_threshold > 100:
-        sensor_threshold = 100
-    if sensor_threshold < 0:
-        sensor_threshold = 0
-
-
-def display_text(msg):
-    #print(msg)
-    brick.display.text(msg)
-
-
-def process_button_input():
-    global config_in_progress
-
-    buttons_pressed = brick.buttons()
-    if not any(buttons_pressed):
-        return
-
-    # Config enable/disable
-    if Button.CENTER in buttons_pressed:
-        config_in_progress = not config_in_progress
-        if config_in_progress:
-            brick.sound.file(SoundFile.DOG_BARK_1)
-            display_text("Config started")
-            # Wait until the CENTER button is no longer pressed
-            while Button.CENTER in buttons_pressed:
-                buttons_pressed = brick.buttons()
-        else:
-            brick.sound.file(SoundFile.DOG_BARK_1)
-            display_text("Config finished")
-            brick.light(Color.GREEN)
-    
-    # Motor position adjustement
-    if config_in_progress:
-        if Button.UP in buttons_pressed:
-            display_text("Motor towards curve")
-            manually_offset_motor(1000)
-        elif Button.DOWN in buttons_pressed:
-            display_text("Motor towards straight")
-            manually_offset_motor(-1000)
-
-        if Button.LEFT in buttons_pressed:
-            manually_offset_sensor(10)
-            display_text("Offseting sensor to far")
-        elif Button.RIGHT in buttons_pressed:
-            manually_offset_sensor(-10)
-            display_text("Offseting sensor to near")
 
 
 can_breach_again = True
@@ -121,15 +65,16 @@ ir_sensor = InfraredSensor(Port.S1)
 brick.light(None)
 motor.reset_angle(0)
 
-config_in_progress = True
+train_config = TrainConfig(motor)
+
 is_on_straight_rail = True
 
 
 while True:
 
-    process_button_input()
+    train_config.process_button_input()
 
-    if config_in_progress:
+    if train_config.is_config_in_progress():
         blink_light()
         continue
     
