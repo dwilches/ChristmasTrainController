@@ -4,29 +4,24 @@ import time
 
 # Ev3 modules
 from pybricks import ev3brick as brick
-from pybricks.parameters import (Port, Stop, Direction, Button, Color,
-                                 SoundFile, ImageFile, Align)
+from pybricks.parameters import Color
 
-class TrainLight:
+
+class RailroadLight:
 
     _next_light_change_time = 0
     _should_blink = False
     _is_light_on = False
     _current_light_color = None
 
-
     def process_lights(self):
         if self._should_blink:
             self._run_blink_cycle()
 
-
     def enable_blink(self, enable: bool):
         self._should_blink = enable
-
-        # Don't let the light ON when blinking is disabled
         if not self._should_blink:
-            brick.light(None)
-
+            brick.light(Color.GREEN)
 
     def _run_blink_cycle(self):
         if self._next_light_change_time < time.clock():

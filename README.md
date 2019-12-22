@@ -1,2 +1,3 @@
-# ChristmasTrainController
-EV3 program to control my Christmas Train and switch rails automatically
+# Xmas Railroad
+
+EV3 program to make my Lego Christmas Railroad to switch rails automatically.

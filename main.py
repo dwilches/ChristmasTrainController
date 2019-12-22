@@ -3,29 +3,23 @@
 # Ev3 MicroPython documentation:
 # https://le-www-live-s.legocdn.com/sc/media/files/ev3-micropython/ev3micropythonv100-71d3f28c59a1e766e92a59ff8500818e.pdf
 
-# System modules
-from time import clock
-
 # Ev3 modules
 from pybricks import ev3brick as brick
-from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
-                                 InfraredSensor, UltrasonicSensor, GyroSensor)
-from pybricks.parameters import (Port, Stop, Direction, Button, Color,
-                                 SoundFile, ImageFile, Align)
-from pybricks.tools import print, wait, StopWatch
-from pybricks.robotics import DriveBase
+from pybricks.ev3devices import (Motor, InfraredSensor)
+from pybricks.parameters import (Port, Color)
 
 # This app's files
-from train_config import TrainConfig
-from train_light import TrainLight
-from train_sensor import TrainSensor
+from railroad_config import RailroadConfig
+from railroad_light import RailroadLight
+from railroad_sensor import RailroadSensor
 
 
 # Configuration parameters
 needed_angle = 360*4
 max_speed = 2000
 
-class RailRoad:
+
+class Railroad:
     
     _is_on_straight_rail = True
 
@@ -36,10 +30,9 @@ class RailRoad:
         ir_sensor = InfraredSensor(Port.S1)
         brick.light(Color.GREEN)
 
-        self._train_light = TrainLight()
-        self._train_sensor = TrainSensor(ir_sensor)
-        self._train_config = TrainConfig(self._motor, self._train_light, self._train_sensor)
-
+        self._train_light = RailroadLight()
+        self._train_sensor = RailroadSensor(ir_sensor)
+        self._train_config = RailroadConfig(self._motor, self._train_light, self._train_sensor)
 
     def execute(self):
         # Enables/disables the config mode, and allows tweaking the motor/sensor thresholds
@@ -56,7 +49,6 @@ class RailRoad:
         if self._train_sensor.is_train_close():
             self._switch_rails()
 
-
     def _switch_rails(self):
         global needed_angle, max_speed
 
@@ -69,6 +61,7 @@ class RailRoad:
         self._is_on_straight_rail = not self._is_on_straight_rail
 
 
-rail_road = RailRoad()
-while True:
-    rail_road.execute()
+if __name__ == "__main__":
+    rail_road = Railroad()
+    while True:
+        rail_road.execute()
