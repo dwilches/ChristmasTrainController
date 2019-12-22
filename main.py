@@ -34,6 +34,8 @@ class Railroad:
         self._train_sensor = RailroadSensor(ir_sensor)
         self._train_config = RailroadConfig(self._motor, self._train_light, self._train_sensor)
 
+        self._train_config.enable_config_mode(True)
+
     def execute(self):
         # Enables/disables the config mode, and allows tweaking the motor/sensor thresholds
         # manually.

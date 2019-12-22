@@ -2,7 +2,7 @@
 # Ev3 modules
 from pybricks import ev3brick as brick
 from pybricks.ev3devices import (Motor, InfraredSensor)
-from pybricks.parameters import Button
+from pybricks.parameters import (Button, SoundFile)
 
 # This app's files
 from railroad_util import *
@@ -33,12 +33,8 @@ class RailroadConfig:
 
         # Config enable/disable
         if Button.CENTER in buttons_pressed and not self._debouncing:
-            self._config_in_progress = not self._config_in_progress
             self._debouncing = True
-            if self._config_in_progress:
-                self._enable_config_mode()
-            else:
-                self._disable_config_mode()
+            self.enable_config_mode(not self._config_in_progress)
 
         # Motor position adjustement
         if self._config_in_progress:
@@ -56,15 +52,15 @@ class RailroadConfig:
                 new_value = self._train_sensor.manually_offset_sensor(-10)
                 display_text("Offseting sensor to near: " + str(new_value))
 
-    def _enable_config_mode(self):
-        brick.sound.beeps(1)
-        self._train_light.enable_blink(True)
-        display_text("Config started")
-
-    def _disable_config_mode(self):
-        brick.sound.beeps(2)
-        self._train_light.enable_blink(False)
-        display_text("Config finished")
+    def enable_config_mode(self, enable):
+        self._config_in_progress = not self._config_in_progress
+        if enable:
+            brick.sound.file(SoundFile.CONFIRM, volume=100)
+            display_text("Config started")
+        else:
+            brick.sound.file(SoundFile.READY, volume=100)
+            display_text("Config finished")
+        self._train_light.enable_blink(enable)
 
     def _manually_offset_motor(self, speed):
         self._motor.run(speed)
